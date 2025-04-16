@@ -1,31 +1,117 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>LA TV Shows | Home</title>
-    <meta name="description" content="A Catalog of Shows Set in Los Angeles" />
-    <link rel="stylesheet" href="style.css" />
-    <script type="text/javascript" src="scripts.js"></script>
-  </head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 Sustainable Salon</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
-  <body>
+<body>
+    <div id="welcome-popup" class="popup-overlay">
+        <div class="popup-content">
+            <h2>Welcome to Sustainable Salon </h2>
+            <p>Dressing sustainably doesn’t have to be hard — let’s build your look!</p>
+            <button onclick="closePopup()">Let’s go!</button>
+        </div>
+    </div>
     <header class="main-header">
-      <h1 class="title">LA TV Shows</h1>
+        <div class="header-left">🌿 Sustainable Salon</div>
+        <div class="header-right">
+            <span>Total: $<span id="headerTotal">0.00</span></span>
+            <button class="reset-btn" onclick="resetLook()">Reset Look</button>
+            <button class="save-btn" onclick="completeLook()">Save Look</button>
+        </div>
     </header>
-    <div id="card-container"></div>
-    <div class="card" style="display: none">
-      <div class="card-content">
-        <h2>TV Show Title</h2>
-        <img src="" alt="TV Show Poster" />
-        <ul>
-          <li>Bullet Point 1</li>
-          <li>Bullet Point 2</li>
-          <li>Bullet Point 3</li>
-        </ul>
-      </div>
+
+    <div class="main">
+        <aside class="sidebar">
+            <h3>🛍️ Shopping Cart</h3>
+            <div class="selected-items">
+                
+                <ul id="selectedList" class="selected-list">
+                    <p class="no-items">No items selected</p>
+                </ul>
+                <div class="total">
+                    <p><strong>Total:</strong> $<span id="totalPrice">0</span></p>
+                </div>
+            </div>
+        </aside>
+
+        <main class="content">
+            <nav class="category-tabs" id="category-nav">
+                <button class="tab active" onclick="goToStep(0)">
+                    <span class="icon">🧴</span> Skincare
+                </button>
+                <button class="tab" onclick="goToStep(1)">
+                    <span class="icon">💄</span> Makeup
+                </button>
+                <button class="tab" onclick="goToStep(2)">
+                    <span class="icon">✂️</span> Haircare
+                </button>
+                <button class="tab" onclick="goToStep(3)">
+                    <span class="icon">👕</span> Clothing
+                </button>
+                <button class="tab" onclick="goToStep(4)">
+                    <span class="icon">👠</span> Shoes
+                </button>
+                <button class="tab" onclick="goToStep(5)">
+                    <span class="icon">👜</span> Accessories
+                </button>
+            </nav>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Format</label>
+                    <select id="formatFilter" onchange="applyFilter()">
+                        <option value="all">All Formats</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Price Range</label>
+                    <div class="price-slider">
+                        <input type="range" id="priceSlider" min="0" max="200" value="200" step="1">
+                        <div class="price-labels">
+                            <span>$0</span>
+                            <span id="priceValue">$200</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Sustainability</label>
+                    <div class="sustainability-filter">
+                        <div class="leaf-filter-container">
+                            <span class="leaf-filter" data-value="1">🍃</span>
+                            <span class="leaf-filter" data-value="2">🍃</span>
+                            <span class="leaf-filter" data-value="3">🍃</span>
+                            <span class="leaf-filter" data-value="4">🍃</span>
+                            <span class="leaf-filter" data-value="5">🍃</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="card-template" style="display: none;">
+                <div class="product-image">Product Image</div>
+                <div class="card-content">
+                    <h3 class="product-name"></h3>
+                    <div class="sustainability-badge">
+                    </div>
+                    <div class="price-action">
+                        <span class="price"></span>
+                        <button class="add-btn">Add</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="card-container" class="product-grid">
+            </div>
+        </main>
     </div>
-    <div class="footer">
-      <button onclick="quoteAlert();">Get A Quote!</button>
-      <button onclick="removeLastCard();">Remove A Card!</button>
-    </div>
-  </body>
+
+    <script src="data.js"></script>
+    <script src="scripts.js"></script>
+</body>
 </html>
