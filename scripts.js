@@ -244,6 +244,13 @@ let sustainabilityFilterValue = 0;
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM loaded - Setting up direct event listeners");
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", () => {
+            filterAndUpdateDisplay();
+        });
+    }
+
 
     const formatFilter = document.getElementById("formatFilter");
     const priceSlider = document.getElementById("priceSlider");
@@ -303,54 +310,39 @@ document.addEventListener("DOMContentLoaded", function () {
 function filterAndUpdateDisplay() {
     try {
         const currentCategory = steps[currentStepIndex];
-        console.log(`--- filterAndUpdateDisplay triggered for category: ${currentCategory} ---`);
-
         const originalProducts = window[currentCategory];
         if (!Array.isArray(originalProducts)) {
-            console.error(`ERROR: No valid product data for ${currentCategory} during filter.`);
-            showCards([]); return;
+            showCards([]);
+            return;
         }
 
-        const formatElement = document.getElementById("formatFilter");
-        const priceElement = document.getElementById("priceSlider");
-        const formatValue = formatElement ? formatElement.value : "all";
-        const priceValue = priceElement ? parseFloat(priceElement.value) : 200;
+        const searchInput = document.getElementById("searchInput");
+        const searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : "";
 
-        console.log("Current Filter DOM/State Values:", {
-            format: formatValue,
-            price: priceValue,
-            sustainability: sustainabilityFilterValue
-        });
-        console.log(`Original product count for filtering: ${originalProducts.length}`);
+        const formatValue = document.getElementById("formatFilter").value;
+        const priceValue = parseFloat(document.getElementById("priceSlider").value);
 
         let filtered = originalProducts.filter(product => {
-            if (typeof product !== 'object' || product === null) return false;
+            if (!product || typeof product !== 'object') return false;
 
-            const itemPrice = parseFloat(product.price);
-            const passesPrice = !isNaN(itemPrice) && itemPrice <= priceValue;
+            const passesPrice = parseFloat(product.price) <= priceValue;
+            const passesFormat = formatValue === "all" || product.format.toLowerCase() === formatValue.toLowerCase();
+            const passesSustainability = sustainabilityFilterValue === 0 || (product.sustainability?.length >= sustainabilityFilterValue);
 
-            const passesFormat = formatValue === "all" || (typeof product.format === 'string' && product.format.toLowerCase() === formatValue.toLowerCase());
+            const matchesSearch = !searchQuery || product.name.toLowerCase().includes(searchQuery) || product.brand.toLowerCase().includes(searchQuery);
 
-            const passesSustainability = sustainabilityFilterValue === 0 || (Array.isArray(product.sustainability) && product.sustainability.length >= sustainabilityFilterValue);
-
-            
-            return passesPrice && passesFormat && passesSustainability;
+            return passesPrice && passesFormat && passesSustainability && matchesSearch;
         });
 
-        console.log(`Final filtered products count: ${filtered.length}`);
         showCards(filtered);
 
     } catch (error) {
-        console.error("Unexpected error during filtering:", error);
-        const category = steps[currentStepIndex];
-        if (window[category] && Array.isArray(window[category])) {
-            console.warn("Falling back to showing all products due to filter error.");
-            showCards(window[category]);
-        } else {
-            console.error("Fallback failed, showing empty."); showCards([]);
-        }
+        console.error("Filter error:", error);
+        const fallback = window[steps[currentStepIndex]];
+        showCards(Array.isArray(fallback) ? fallback : []);
     }
 }
+
 
 function goToStep(index) {
     console.log(`--- goToStep triggered for index: ${index} ---`);
